@@ -1,75 +1,76 @@
-import Vue from 'vue'
-import VueRouter from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+import Vue from "vue";
+import VueRouter from "vue-router";
+import HomeView from "../views/HomeView.vue";
 
-Vue.use(VueRouter)
+Vue.use(VueRouter);
+const DEFAULT_TTTLE = "FIRSTAPP";
 
-const routes = [
-  //path base
-  {
-    path: "/",
-    redirect: "/home",
-  },
-  //path assignment
-  {
-    path: "/",
-    component: {
-      render(c) {
-        return c("router-view");
-      },
+const router = new VueRouter({
+  mode: "history",
+  base: import.meta.env.BASE_URL,
+  routes: [
+    {
+      path: "/",
+      name: "home",
+      component: HomeView,
+      redirect: "movies",
+      children: [
+        {
+          path: "/land-page",
+          name: "LandPage",
+          component: () => import("../views/LandPage.vue"),
+        },
+        {
+          path: "/rent-your-space",
+          name: "RentYourSpace",
+          component: () => import("../views/RentYourSpace.vue"),
+        },
+        {
+          path: "/your-info-space",
+          name: "YourInfoSpace",
+          component: () => import("../views/YourInfoSpace.vue"),
+        },
+        {
+          path: "/offer-your-space",
+          name: "OfferYourSpace",
+          component: () => import("../views/OfferYourSpace.vue"),
+        },
+        {
+          path: "/rent-space",
+          name: "RentSpace",
+          component: () => import("../views/RentSpace.vue"),
+        },
+        {
+          path: "/catalogue-space",
+          name: "CatalogueSpace",
+          component: () => import("../views/CatalogueSpace.vue"),
+        },
+        {
+          path: "/space-details",
+          name: "SpaceDetails",
+          component: () => import("../views/SpaceDetails.vue"),
+        },
+        {
+          path: "/form-validation",
+          name: "FormValidation",
+          component: () => import("../views/FormValidation.vue"),
+        },
+        {
+          path: "/movies",
+          name: "Movies",
+          component: () => import("../views/Movies.vue"),
+        },
+      ],
     },
-    //components that will be rendered in router-view
-    children: [
-      {
-        path: "/home",
-        name: "home",
-        component: () => import("@/views/HomeView.vue"),
-      },
-      {
-        path: "/dashboard",
-        name: "dashboard",
-        component: () => import("@/views/DashboardView.vue"),
-      },
-      {
-        path: "/about",
-        name: "about",
-        component: () => import("@/views/AboutView.vue"),
-      },
-      {
-        path: "/rent-u-space",
-        name: "rentUspace",
-        component: () => import("@/views/RentUSpace/HomeView.vue"),
-      },
-      {
-        path: "/rent-u-space/information",
-        name: "rentUspaceInformation",
-        component: () => import("@/views/RentUSpace/InformationView.vue"),
-      },
-      {
-        path: "/rent-u-space/promotion",
-        name: "rentUspacePromotion",
-        component: () => import("@/views/RentUSpace/PromotionSpace.vue"),  
-      },
+    {
+      path: "/about",
+      name: "about",
+      // route level code-splitting
+      // this generates a separate chunk (About.[hash].js) for this route
+      // which is lazy-loaded when the route is visited.
+      component: () => import("../views/AboutView.vue"),
+    },
+  ],
+});
 
-      {
-        path: "/rent-space",
-        name: "rentSpace",
-        component: () => import("@/views/RentSpace/HomeView.vue"),
-      },
-      {
-        path: "/rent-space/catalogue",
-        name: "rentSpaceCatalogue",
-        component: () => import("@/views/RentSpace/CatalogueNameView.vue"),
-      },
-      {
-        path: "/rent-space/details",
-        name: "rentSpaceDetails",
-        component: () => import("@/views/RentSpace/DetailsView.vue"),
-      },
-    ],
-  },
-];
-
-
-const router = new VueRouter({routes})
 export default router;
