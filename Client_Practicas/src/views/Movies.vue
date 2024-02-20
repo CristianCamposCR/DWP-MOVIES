@@ -30,6 +30,8 @@
           >
             <b-card-text>
               <p>Descripción: {{ movie.description }}</p>
+              <p>Director: {{ movie.director }}</p>
+              <p>Genero: {{ movie.category.name }}</p>
               <p>Fecha de publicación: {{ movie.atPublish }}</p>
             </b-card-text>
             <b-row>
@@ -103,7 +105,13 @@ import Axios from "axios";
 import SaveMovie from "../views/SaveMovie.vue";
 import UpdateMovie from "../views/UpdateMovie.vue";
 import FilterMovies from "@/views/Movies/FilterMovies.vue";
-import {getMoviesByDirectorName, getMoviesByTitle} from "@/views/Movies/movie.gateway";
+import {
+  getMoviesByBetweenDates,
+  getMoviesByCategory, getMoviesByDate,
+  getMoviesByDirectorName,
+  getMoviesByTitle
+} from "@/views/Movies/movie.gateway";
+
 export default Vue.extend({
   name: "Movies",
   components: {
@@ -130,7 +138,7 @@ export default Vue.extend({
         }
       },
 
-      pageable:{
+      pageable: {
         currentPage: 1,
         sort: "id",
         direction: "asc",
@@ -191,6 +199,42 @@ export default Vue.extend({
         this.isLoading = false;
       }
     },
+    async getMoviesByDatesPeriods(pageable) {
+      try {
+        this.isLoading = true;
+        const data = await getMoviesByBetweenDates(this.filter.dates.start, this.filter.dates.end, pageable);
+        this.totalRows = data.totalElements
+        this.movies = data.content;
+      } catch (error) {
+        console.log(error);
+      } finally {
+        this.isLoading = false;
+      }
+    },
+    async getMoviesByCategory(pageable) {
+      try {
+        this.isLoading = true;
+        const data = await getMoviesByCategory(this.filter.value, pageable);
+        this.totalRows = data.totalElements
+        this.movies = data.content;
+      } catch (error) {
+        console.log(error);
+      } finally {
+        this.isLoading = false;
+      }
+    },
+    async getMoviesByAtPublishDesc(pageable) {
+      try {
+        this.isLoading = true;
+        const data = await getMoviesByDate(this.filter.dates.start, pageable);
+        this.totalRows = data.totalElements
+        this.movies = data.content;
+      } catch (error) {
+        console.log(error);
+      } finally {
+        this.isLoading = false;
+      }
+    },
 
 
     async changeStatus(item) {
@@ -220,25 +264,27 @@ export default Vue.extend({
         this.isLoading = false;
       }
     },
-    handleMovies(){
-      const pageable = `?sort=id&direction=asc&page=${this.currentPage - 1}&size=${this.perPage}`
+    handleMovies() {
+      const pageable = `?page=${this.currentPage - 1}&size=${this.perPage}`
+      console.log(this.filter.selectedOption, this.filter.value, this.filter.dates.start, this.filter.dates.end)
       switch (this.filter.selectedOption) {
         case "titleMovie":
           this.getMoviesByTittle(pageable);
           break;
-          case "nameDirector":
-            this.getMoviesByDirector();
-            break;
+        case "nameDirector":
+          this.getMoviesByDirector(pageable);
+          break;
+        case "datesBetween":
+          this.getMoviesByDatesPeriods(pageable);
+          break;
+        case "category":
+          this.getMoviesByCategory(pageable);
+          break;
+        case "date":
+          this.getMoviesByAtPublishDesc(pageable);
+          break;
         default:
           this.getMovies(pageable);
-          // case "datesBetween":
-          //   this.getMoviesByDates();
-          //   break;
-          // case "category":
-          //   this.getMoviesByCategory();
-          //   break;
-          // case "date":
-          //   this.getMoviesByDate();
       }
     }
 

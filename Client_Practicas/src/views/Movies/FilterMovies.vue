@@ -70,12 +70,12 @@
           <b-row>
             <b-col cols="12" class="my-3">
               <b-form-group>
-                <label for="atPublish">
+                <label for="atPublishStart">
                   Fecha inicio:&nbsp;<b class="text-danger">*</b></label
                 >
                 <b-form-datepicker
                     label-no-date-selected="Selecciona una fecha"
-                    id="atPublish"
+                    id="atPublishStart"
                     v-model="v$.filter.dates.start.$model"
                     class="mb-2"
                     @blur="v$.filter.dates.start.$touch"
@@ -86,11 +86,11 @@
             </b-col>
             <b-col cols="12">
               <b-form-group>
-                <label for="atPublish">
+                <label for="atPublishEnd">
                   Fecha fin:&nbsp;<b class="text-danger">*</b></label
                 >
                 <b-form-datepicker
-                    id="atPublish"
+                    id="atPublishEnd"
                     label-no-date-selected="Selecciona una fecha"
                     v-model="v$.filter.dates.end.$model"
                     class="mb-2"
@@ -112,12 +112,12 @@
                 <b-form-datepicker
                     label-no-date-selected="Selecciona una fecha"
                     id="atPublish"
-                    v-model="v$.filter.value.$model"
+                    v-model="v$.filter.dates.start.$model"
                     class="mb-2"
-                    @blur="v$.filter.value.$touch"
-                    :state=" v$.filter.value.$dirty ? !v$.filter.value.$error : null"
+                    @blur="v$.filter.dates.start.$touch"
+                    :state=" v$.filter.dates.start.$dirty ? !v$.filter.dates.start.$error : null"
                 ></b-form-datepicker>
-                <b-form-invalid-feedback v-if="v$.filter.value.$error">Campo obligatorio</b-form-invalid-feedback>
+                <b-form-invalid-feedback v-if="v$.filter.dates.start.$error">Campo obligatorio</b-form-invalid-feedback>
               </b-form-group>
             </b-col>
           </b-row>
@@ -125,9 +125,11 @@
 
 
         <div class="col-12 mt-3 px-0 text-right">
-          <b-button variant="outline-danger" @click="closeModal">Cancelar</b-button>
-          <b-button variant="success" class="ml-2" type="submit" :disabled="v$.filter.value.$invalid && v$.filter.dates.$invalid">Guardar
-          </b-button>
+          <b-button variant="outline-primary" @click="resetFilter">Limpiar</b-button>
+          <b-button variant="outline-danger"  class="mx-2"  @click="closeModal">Cancelar</b-button>
+          <b-button variant="success" type="submit"
+                    :disabled="v$.filter.value.$invalid && v$.filter.dates.start.$invalid && v$.filter.dates.end.$invalid">Aceptar
+        </b-button>
         </div>
       </b-form>
 
@@ -143,7 +145,9 @@ import Axios from "axios";
 
 export default Vue.extend({
   name: "filter-movie",
-  setup() {return {v$: useVuelidate()};},
+  setup() {
+    return {v$: useVuelidate()};
+  },
   props: {
     filter: {
       type: Object,
@@ -161,7 +165,7 @@ export default Vue.extend({
       if (val === "category") {
         this.filter.value = null;
         this.getCategories();
-      }else{
+      } else {
         this.filter.value = "";
         this.v$.filter.value.$reset();
         this.filter.dates.start = "";
@@ -188,6 +192,18 @@ export default Vue.extend({
       this.filter.value = "";
       this.v$.filter.$reset();
     },
+    resetFilter() {
+      this.filter.value = "";
+      this.filter.selectedOption = null;
+      this.v$.filter.value.$reset();
+      this.filter.dates.start = "";
+      this.v$.filter.dates.start.$reset();
+      this.filter.dates.end = "";
+      this.v$.filter.dates.end.$reset();
+      this.closeModal();
+      this.$emit("reload");
+
+    },
     makeToast() {
       this.$bvToast.toast("Registro exitoso", {
         title: `Éxito`,
@@ -199,16 +215,17 @@ export default Vue.extend({
       this.$bvModal.hide("modal-filter-movie");
     },
     handleOk() {
+      console.log(this.filter)
       this.$emit("reload");
       this.closeModal();
     },
   },
   validations: {
-    filter:{
+    filter: {
       value: {
         required,
       },
-      dates:{
+      dates: {
         start: {
           required,
         },
@@ -219,7 +236,6 @@ export default Vue.extend({
     },
   },
 });
-
 
 
 </script>
