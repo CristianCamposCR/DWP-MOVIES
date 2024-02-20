@@ -191,7 +191,6 @@
       async getCategories() {
         try {
           const response = await Axios.get("http://localhost:8080/api/category/");
-          console.log("ayuya", response.data.content);
           this.options = response.data.content.map((element) => ({
             text: element.name,
             value: element.id,
