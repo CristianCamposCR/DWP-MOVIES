@@ -3,4 +3,4 @@ Do a filter  that return the movies in specific depends of the parameter that yo
 
 image 
 
-![Logo](/src/assets/img/filter/screenshot_03.png)
+![Logo](/Client_Practicas/src/assets/img/filter/screenshot_03.png)
